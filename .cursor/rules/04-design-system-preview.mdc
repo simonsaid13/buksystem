@@ -1,0 +1,137 @@
+---
+description: Rules for maintaining the Design System preview screen. This is the main entry of the app during development. Update whenever components are added or modified.
+globs: src/screens/DesignSystem/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Design System Preview Screen
+
+## Purpose
+The Design System screen is the main app entry during development.
+It shows all components with all states, organized by atomic category and Figma page.
+
+## Structure
+
+```
+src/screens/DesignSystem/
+├── index.tsx              # Main DS screen: search + tabs + list
+├── registry.ts            # Component registry (auto-maintained)
+├── components/
+│   ├── DSComponentCard.tsx    # List item: component name + preview
+│   ├── DSComponentPage.tsx    # Full page: all states of one component
+│   ├── DSSearchBar.tsx        # Search input
+│   ├── DSTabBar.tsx           # Category tabs (Atoms / Molecules / Organisms / by Figma page)
+│   └── DSTextStressTest.tsx   # Multi-language text length tester
+└── screens/
+    └── DSTokensScreen.tsx     # Color tokens viewer (primitives + semantic)
+```
+
+## registry.ts Rules
+
+This file is the source of truth for what's in the design system.
+
+```ts
+// src/screens/DesignSystem/registry.ts
+
+import type { ComponentType } from 'react';
+
+export type DSCategory = 'atoms' | 'molecules' | 'organisms';
+
+export interface DSComponentEntry {
+  id: string;              // kebab-case unique ID
+  name: string;            // Display name — same as component name
+  category: DSCategory;
+  figmaPage?: string;      // Figma page this belongs to (e.g. 'Controls', 'Booking')
+  description?: string;    // 1-line description
+  states: DSStateEntry[];  // All states/variants to preview
+  component: ComponentType<any>;
+}
+
+export interface DSStateEntry {
+  label: string;           // Human-readable state label
+  props: Record<string, any>; // Props to apply for this state
+}
+
+export const componentRegistry: DSComponentEntry[] = [];
+```
+
+**Cursor must update this file automatically** when:
+- A new component is created → append entry
+- A new state/variant is added → update `states` array for that entry
+- A component is renamed → update `id` and `name`
+- A component is deleted → remove entry
+
+Example entry for `AppButton`:
+```ts
+{
+  id: 'app-button',
+  name: 'AppButton',
+  category: 'atoms',
+  figmaPage: 'Controls',
+  description: 'Primary action button. Supports primary, secondary, ghost variants.',
+  states: [
+    { label: 'Primary Default', props: { variant: 'primary', size: 'large', children: 'Забронювати' } },
+    { label: 'Primary Disabled', props: { variant: 'primary', size: 'large', isDisabled: true, children: 'Забронювати' } },
+    { label: 'Primary Loading', props: { variant: 'primary', size: 'large', isLoading: true, children: 'Забронювати' } },
+    { label: 'Secondary Default', props: { variant: 'secondary', size: 'large', children: 'Детальніше' } },
+    { label: 'Ghost Default', props: { variant: 'ghost', size: 'large', children: 'Скасувати' } },
+    { label: 'Small', props: { variant: 'primary', size: 'small', children: 'Фільтр' } },
+    // Multi-language stress test states:
+    { label: 'Long text (DE)', props: { variant: 'primary', size: 'large', children: 'Jetzt Skipass kaufen' } },
+    { label: 'Long text (2 lines)', props: { variant: 'primary', size: 'large', children: 'Забронювати лижний підйомник на завтра' } },
+  ],
+  component: AppButton,
+},
+```
+
+## Text Stress Testing
+
+Every component entry with text content must include at minimum:
+1. Default (Ukrainian, normal length)
+2. Long variant (German-equivalent length — 1.5x–2x)
+3. Very long variant (forces 2+ lines)
+
+This catches layout breaks before they hit production.
+
+## DSComponentPage Layout
+
+When a user taps a component card in the list:
+```tsx
+// Shows component name, description, Figma link if available
+// Then renders each state in a card with:
+// - State label
+// - Rendered component preview (on appropriate background)
+// - Props display (collapsible JSON)
+```
+
+Background for previews:
+- Use `tokens.bgOnSurface` as card background
+- Render component on appropriate background per its usage context
+  (e.g. a card component renders on `tokens.bgSurface`)
+
+## Tabs in Design System Screen
+
+Tabs let user filter by:
+1. Category: `Atoms` | `Molecules` | `Organisms`
+2. Figma page: populated dynamically from `figmaPage` in registry entries
+
+Default tab: `Atoms`
+
+## Search
+
+Search filters by:
+- Component name
+- `figmaPage`
+- `description`
+
+Case-insensitive, instant filter on keystroke.
+
+## Tokens Screen
+
+Separate screen in DS showing:
+1. Color primitives grid (all swatches from `primitives.ts`)
+2. Semantic tokens table: token name | current value | swatch
+3. Typography specimen: each variant with sample text
+4. Spacing ruler: visual spacing scale
+
+Accessible from DS main screen via a "Tokens" button.

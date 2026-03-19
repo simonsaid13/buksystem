@@ -1,0 +1,108 @@
+---
+description: Master project context. Read this first. Explains what we are building, who is involved, and what every rule and skill file does.
+globs:
+alwaysApply: true
+---
+
+# Project Context — Bukovel App Design System
+
+## What we are building
+
+A React Native mobile app for **Bukovel** — the largest ski resort in Ukraine.
+Stack: Expo (SDK 52+), React Native, TypeScript, Reanimated 3.
+Platforms: iOS and Android only. Web is a separate project — ignore it.
+
+The app covers: ski pass booking, hotel booking, transfer booking, resort services, trip planning, events, interactive resort map, and user profile (BukovelID).
+
+## Who is working on this
+
+**Simon** — Design Director at The Gradient (Lviv). Responsible for:
+- Figma design system
+- React Native design system (this project)
+- Figma screens and user flows
+
+Simon works as a **vibecoder** — he drives architecture and design decisions, uses Cursor + Figma MCP to build components, and is not a full-time developer. Keep explanations plain. Never over-explain obvious things.
+
+The dev team (Gradient + Bukovel side) will consume the components built here.
+
+## Development context
+
+- **Quick testing**: Expo Go app on physical device, scan QR from terminal. This is the primary method.
+- **The app's main entry during development** is the Design System preview screen — not a real app screen.
+- Figma MCP is connected in Cursor and is the source of truth for design tokens and component specs.
+- Primitives (raw colors) and semantic tokens are provided directly from Figma — never invent or guess color values.
+- Font: **Bukovel** (custom brand font). Font files will be provided. Never substitute another font.
+
+## Design system structure
+
+### Colors — 2 layers
+1. **Primitives** (`src/theme/primitives.ts`) — raw hex values, numeric scale (Brand100–Brand900, Neutral100–900, etc.). Never used directly in components.
+2. **Semantic tokens** (`src/theme/tokens.ts`) — colors by role: `bgWinter`, `intPrimary`, `textOnCard`, `iconOnInt`, etc. These are the only colors components reference.
+
+Two themes: `winter` (default) and `summer`. Both must always be in sync.
+
+### Typography
+Variant names match Figma token names in camelCase: `body1Highlight`, `ctaLarge`, `captionLabel`, etc.
+All text in the app goes through the `AppTypography` atom — never raw `<Text>`.
+`allowFontScaling={false}` always.
+
+### Spacing
+Base unit: 4px. Named scale: `tiny` (4), `small` (8), `medium` (12), `large` (16), `extraLarge` (20), `xxLarge` (24), `xxxLarge` (32).
+Never use raw numbers for spacing in components.
+
+### Icons
+Two sources:
+- **Iconoir React Native** for standard UI icons. kebab-case name → PascalCase component: `arrow-right` → `ArrowRight`.
+- **Custom SVG** for resort-specific icons (gondola, ski lift, slopes, etc.) in `src/assets/icons/custom/`.
+All icons go through the `AppIcon` atom. Never import icon libraries directly in feature components.
+
+### Component structure (atomic design)
+Every component lives in its own folder with exactly these files:
+- `ComponentName.tsx` — JSX and rendering logic only
+- `ComponentName.types.ts` — all TypeScript types and prop definitions
+- `ComponentName.styles.ts` — all StyleSheet.create() calls, receives tokens as argument
+- `index.ts` — single re-export line
+- `README.md` — states table, variants, Figma link, usage example
+
+Atomic categories:
+- `atoms/` — single-purpose: AppButton, AppInput, AppTypography, AppIcon, AppBadge, AppTag, AppToggle, AppCheckbox
+- `molecules/` — composed of atoms: AppFormField, AppListItem, AppSearchBar, AppCardHeader
+- `organisms/` — complex, full sections: AppModal, AppBottomSheet, AppForm, AppDatePicker
+
+Component prefix: always `App` — `AppButton` not `Button`, `AppInput` not `Input`.
+
+### Design System preview screen
+Lives at `src/screens/DesignSystem/`. This is the app entry during development.
+Shows all components with all states. Searchable. Filterable by category and Figma page.
+Registry file `registry.ts` is auto-maintained — updated every time a component is created or gets a new state.
+Every text state must include long-text and 2-line wrap test entries.
+
+## What each rule file does
+
+| File | Scope | Purpose |
+|------|-------|---------|
+| `00-conventions.mdc` | always | Naming, file structure, imports, prop naming patterns |
+| `01-design-tokens.mdc` | `src/**` | Token system rules, what components can and cannot reference |
+| `02-component-from-figma.mdc` | `src/components/**` | How to structure components, state detection, registry update |
+| `03-icons.mdc` | `src/**` | Iconoir naming, custom icon detection, AppIcon usage |
+| `04-design-system-preview.mdc` | `src/screens/DesignSystem/**` | registry.ts rules, DS screen structure, text stress tests |
+| `05-quality-checks.mdc` | `src/components/**` | Token misuse, missing states, prop consistency, README requirement |
+| `06-figma-mcp-workflow.mdc` | on demand | Figma MCP inspection, token mapping, off-grid flagging |
+
+## What the skill file does
+
+`SKILL-rn-component-from-figma.md` — fires when a Figma link is pasted.
+10-step workflow: inspect via MCP → confirm plan with user → build files → map tokens → resolve icons → handle missing states → add text stress tests → write README → update registry → output summary.
+
+**Always confirm the plan before writing any code.**
+
+## Key rules to never break
+
+- No hardcoded hex colors anywhere in component files
+- No hardcoded spacing numbers anywhere in component files
+- No raw `<Text>` — always `<AppTypography>`
+- No direct Iconoir or SVG imports in feature components — always `<AppIcon>`
+- Both themes (winter + summer) must always be updated together
+- `registry.ts` must be updated every time a component is created or changed
+- Always ask about missing states before finishing a component
+- Always add long-text and wrap-test entries for every text state

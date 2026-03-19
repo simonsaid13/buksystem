@@ -1,0 +1,121 @@
+---
+description: Icon handling rules for Bukovel app. Covers Iconoir React Native package and custom SVG icons. Triggered when building components that contain icons or when icon names are referenced.
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Icon Handling
+
+## Two Icon Sources
+
+### 1. Iconoir React Native (interface icons)
+Package: `iconoir-react-native`  
+Docs: https://iconoir.com/docs/packages/iconoir-react-native  
+Use for: all standard UI icons (navigation, actions, status, etc.)
+
+**Naming rule**: Figma reference names are kebab-case. React component names are PascalCase.
+```
+arrow-right       → ArrowRight
+xmark-circle      → XmarkCircle
+search            → Search
+nav-arrow-left    → NavArrowLeft
+check-circle      → CheckCircle
+warning-circle    → WarningCircle
+```
+
+**Usage**:
+```tsx
+import { Search, ArrowRight, XmarkCircle } from 'iconoir-react-native';
+
+// Always use token colors, never hardcode
+const { tokens } = useTheme();
+
+<Search
+  width={24}
+  height={24}
+  color={tokens.iconOnCard}
+  strokeWidth={1.5}
+/>
+```
+
+**Standard icon sizes**:
+- 16: `caption`, tight UI elements
+- 20: default inline icons
+- 24: standard UI icons (default)
+- 32: feature icons, empty states
+
+**When you see an icon in a Figma component**:
+1. Check if the icon name matches an Iconoir icon (search iconoir.com)
+2. If found: use Iconoir component with correct PascalCase name
+3. If NOT found: use custom SVG (see below)
+
+### 2. Custom Icons (ski resort specific)
+Location: `src/assets/icons/custom/`  
+Use for: gondola, ski lift, ski slopes, snowpark, Bukovel-specific services
+
+Custom icons are wrapped in a unified `AppIcon` component.
+
+**Custom icon file naming**: PascalCase SVG files.
+```
+Gondola.tsx
+SkiLift.tsx
+SkiSlope.tsx
+Snowpark.tsx
+```
+
+Each custom icon is a typed React component:
+```tsx
+// src/assets/icons/custom/Gondola.tsx
+import React from 'react';
+import Svg, { Path } from 'react-native-svg';
+
+interface GondolaIconProps {
+  width?: number;
+  height?: number;
+  color?: string;
+}
+
+const GondolaIcon: React.FC<GondolaIconProps> = ({
+  width = 24,
+  height = 24,
+  color = '#000',
+}) => (
+  <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
+    <Path d="..." stroke={color} strokeWidth={1.5} />
+  </Svg>
+);
+
+export default GondolaIcon;
+```
+
+## AppIcon Unified Component
+
+All icons go through `AppIcon` — never import Iconoir or custom icons directly in feature components.
+
+```tsx
+// src/components/atoms/AppIcon/AppIcon.tsx
+import { IconoirIconName } from 'iconoir-react-native';
+// ...
+
+type AppIconProps = {
+  name: IconoirIconName | CustomIconName;
+  size?: 16 | 20 | 24 | 32;
+  color?: string;
+  strokeWidth?: number;
+};
+```
+
+## Detection Rules
+
+When Cursor encounters an icon name in a Figma component:
+
+1. Is it a custom Bukovel icon (gondola, lift, slope, piste, snowpark, resort-specific)? → `CustomIconName`, SVG from `src/assets/icons/custom/`
+2. Does it match an Iconoir icon name? → Import from `iconoir-react-native` via `AppIcon`
+3. Unknown icon → Ask: "I couldn't find '[icon-name]' in Iconoir. Is this a custom Bukovel icon? If so, I need the SVG file to create it."
+
+## Do Not
+
+- Do not inline SVG paths in component files — always use `AppIcon` or a named icon component
+- Do not use SF Symbols, Material Icons, or any other icon library
+- Do not hardcode color in icon calls — always pass `tokens.icon*` value
+- Do not use image files (.png, .jpg) for icons — SVG only

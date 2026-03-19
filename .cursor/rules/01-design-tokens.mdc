@@ -1,0 +1,126 @@
+---
+description: Design token rules for Bukovel design system. Primitive and semantic color layers, typography, spacing. Apply when working in src/theme/ or any component file.
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Design Tokens
+
+## Two-Layer Color System
+
+### Layer 1: Primitives (`@theme/primitives.ts`)
+Raw color values with numeric scale. Named `ColorName + Scale` in PascalCase.
+```
+brand100 ... brand900
+neutral100 ... neutral900
+red100 ... red900
+blue100 ... blue900
+green100 ... green900
+orange100 ... orange900
+purple300, purple500
+yellow300, yellow500
+cyan300, cyan500
+violet300, violet500
+white, black
+```
+**Rule**: Never reference primitives directly inside component files. Only themes and token files may reference primitives.
+
+### Layer 2: Semantic Tokens (`@theme/tokens.ts`)
+Colors by role/usage. These are the only colors components should use.
+
+```ts
+// Accessed via useTheme()
+const { tokens } = useTheme();
+
+// Background
+tokens.bgWinter          // Main screen background (winter theme)
+tokens.bgSummer          // Main screen background (summer theme)
+tokens.bgAi              // AI feature backgrounds
+tokens.bgSurface         // Modal windows, bottom sheets
+tokens.bgOnSurface       // Cards and elements on surfaces
+tokens.bgCard            // Card background
+
+// Interactive (buttons, toggles, interactive elements)
+tokens.intPrimary        // Primary interactive — teal brand
+tokens.intPrimaryPressed // Primary pressed state
+tokens.intSecondary      // Secondary interactive — light fill
+tokens.intSecondaryPressed
+tokens.intDisabled       // All disabled interactive elements
+
+// Text
+tokens.textOnInt         // Text on interactive elements (white on teal)
+tokens.textOnIntSecondary
+tokens.textOnCard        // Primary text on cards
+tokens.textOnCardSecondary
+tokens.textOnBgOnSurface // Primary text on surface backgrounds
+tokens.textOnBgOnSurfaceSecondary
+tokens.textDisabled      // Disabled text
+
+// Icon
+tokens.iconOnInt
+tokens.iconOnIntSecondary
+tokens.iconOnCard
+tokens.iconOnCardSecondary
+tokens.iconDisabled
+
+// Strokes & Dividers
+tokens.strokeOnSurface
+tokens.dividerOnSurface
+```
+
+## Theme Switching
+Themes in `@theme/themes/`. Currently: `winter` (default), `summer`.
+`useTheme()` returns the active theme's token set. Components are theme-agnostic.
+
+**Do not hard-code any theme-conditional logic in components.**
+If a component looks different per-theme, that difference must be expressed through tokens.
+
+## Typography Tokens
+Variant names map directly to Figma token names (camelCase conversion):
+```
+Figma: body-1-highlight → Code: 'body1Highlight'
+Figma: cta-large        → Code: 'ctaLarge'
+Figma: caption-label    → Code: 'captionLabel'
+```
+
+All text must go through `<AppTypography variant="body1" />` component.
+Never use raw `<Text>` in component files.
+
+Full variant list:
+```
+number1
+display1, display2
+title1, title2, title3
+body1Highlight, body1TinyHighlight, body1, body1Tiny
+body2Highlight, body2TinyHighlight, body2, body2Tiny
+captionHighlight, captionRegular, captionLabel
+ctaLarge, ctaRegular, ctaSmall
+```
+
+## Spacing Tokens
+```ts
+import { spacing } from '@theme/spacing';
+
+spacing.tiny      // 4
+spacing.small     // 8
+spacing.medium    // 12
+spacing.large     // 16
+spacing.extraLarge // 20
+spacing.xxLarge   // 24
+spacing.xxxLarge  // 32
+```
+
+## Validation Checklist
+When creating or reviewing a component, verify:
+- [ ] No hardcoded hex colors anywhere in the component file
+- [ ] No hardcoded spacing numbers — using `spacing.*` everywhere
+- [ ] All text through `AppTypography`, never raw `Text`
+- [ ] `allowFontScaling={false}` is set (handled by AppTypography)
+- [ ] Colors reference `tokens.*` from `useTheme()`, not primitives
+
+## Adding New Tokens
+When Figma introduces a new semantic color:
+1. Add it to `ColorTokens` interface in `@theme/tokens.ts`
+2. Add value to `winterTokens` in `@theme/themes/winter.ts`
+3. Add value to `summerTokens` in `@theme/themes/summer.ts`
+4. Never add a token to only one theme — both must stay in sync

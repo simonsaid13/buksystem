@@ -1,0 +1,90 @@
+---
+description: Figma MCP workflow. How to handle Figma links, extract tokens, detect components. Triggered when user pastes a Figma URL or says "build this from Figma".
+globs:
+alwaysApply: false
+---
+
+# Figma MCP Workflow
+
+## When a Figma link is pasted
+
+1. Use Figma MCP to inspect the node.
+2. Extract in order: name, variants/properties, nested components, auto-layout, styles (color, typography, spacing).
+3. Map every Figma style value to a token:
+   - Color → nearest `tokens.*` semantic token
+   - Font style → `TypographyVariant` from `@theme/typography.ts`
+   - Spacing → nearest `spacing.*` value from `@theme/spacing.ts`
+4. Before building: summarize what you found and ask the user to confirm.
+
+## Figma Layer Naming Conventions
+
+Layers in Figma follow this naming convention (agreed with Bukovel design team):
+- Component names: PascalCase — `AppButton`, `AppInput`
+- Variants property: `Variant` — values: `primary`, `secondary`, `ghost`, `destructive`
+- Size property: `Size` — values: `small`, `medium`, `large`
+- State property: `State` — values: `default`, `pressed`, `disabled`, `loading`, `error`, `focus`
+- Boolean props: `Is` prefix — `IsDisabled`, `IsLoading`, `HasIcon`
+
+When Figma properties use different names, map them to the above convention in code and flag the discrepancy.
+
+## Token Mapping Rules
+
+### Colors
+Check Figma fill/stroke → find matching semantic token.
+If no match exists:
+- Check if the raw hex matches a primitive → ask which semantic token it should map to
+- Never silently introduce a new hardcoded color
+
+Priority order for color token matching:
+1. Exact token match by role (e.g. button background → `tokens.intPrimary`)
+2. Nearest primitive value
+3. Flag as unmapped and ask
+
+### Typography
+Figma text style name → `TypographyVariant`:
+```
+body-1             → body1
+body-1-highlight   → body1Highlight
+body-1-tiny        → body1Tiny
+title-1            → title1
+caption-regular    → captionRegular
+caption-label      → captionLabel
+cta-large          → ctaLarge
+display-1          → display1
+```
+If Figma uses a style not in this list → flag it: "Figma uses '[name]' which has no matching token. Closest: '[nearest]'. Use that, or add a new variant?"
+
+### Spacing
+Round Figma spacing values to nearest 4px grid value:
+```
+1-2px   → spacing.tiny (4)
+5-10px  → spacing.small (8)
+11-14px → spacing.medium (12)
+15-18px → spacing.large (16)
+19-22px → spacing.extraLarge (20)
+23-26px → spacing.xxLarge (24)
+27-36px → spacing.xxxLarge (32)
+37-44px → spacing.xxxxLarge (40)
+```
+If off-grid by more than 2px, flag it: "Figma has [X]px here which is off the 4px grid. Rounding to [nearest]. Ok?"
+
+## Component Type Detection
+
+Read the Figma layer hierarchy to determine atomic category:
+
+- **Atom**: single node or composed of only primitives (Text, Icon, Shape)
+  → `src/components/atoms/`
+
+- **Molecule**: contains 2+ atom-level components
+  → `src/components/molecules/`
+
+- **Organism**: contains molecules or is a full screen section
+  → `src/components/organisms/`
+
+When uncertain, ask.
+
+## After Every Build
+
+1. Confirm with user: "Built [ComponentName] with states: [list]. Missing from Figma: [list if any]. Registered in registry.ts."
+2. If any tokens were unmapped or off-grid values rounded — summarize at the end.
+3. Ask if a README was wanted or auto-generate it.

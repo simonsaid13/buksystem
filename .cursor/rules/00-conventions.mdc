@@ -1,0 +1,88 @@
+---
+description: Core project conventions for Bukovel React Native app. Naming, structure, TypeScript patterns. Always apply.
+globs:
+alwaysApply: true
+---
+
+# Project Conventions
+
+## Platform
+This is a React Native (Expo) mobile project. iOS + Android only.
+Never suggest web-only solutions, CSS, SCSS, or HTML.
+
+## Language & Types
+- TypeScript everywhere. No `any` unless absolutely unavoidable (if used, add a comment explaining why).
+- All component props defined as `type Props = { ... }` directly above the component.
+- All enums use `as const` object pattern, not TypeScript `enum`.
+- Strict null checks. Handle undefined states explicitly.
+
+## Naming
+- Components: PascalCase with `App` prefix — `AppButton`, `AppInput`, `AppCard`.
+  Exception: screen-level components (e.g. `HomeScreen`, `BookingScreen`).
+- Variables, functions, hooks: camelCase.
+- Files: same as the primary export — `AppButton.tsx`, `useTheme.ts`.
+- Types/interfaces: PascalCase — `ButtonVariant`, `TypographyVariant`.
+- Folders: PascalCase for component folders — `AppButton/`, `AppInput/`.
+
+## Component File Structure
+Each component lives in its own folder:
+```
+AppButton/
+├── AppButton.tsx           # Main component
+├── AppButton.types.ts      # Props and local types
+├── AppButton.styles.ts     # StyleSheet.create(...)
+├── components/             # Sub-components (compound pattern)
+│   └── AppButtonIcon.tsx
+├── index.ts                # Re-export: export { default } from './AppButton'
+└── README.md               # States, usage notes, props summary
+```
+
+For large compound components (Modal, Form, etc.) use sub-components folder.
+Do not put multiple unrelated components in the same file.
+
+## Styling
+- All styles in `ComponentName.styles.ts` using `StyleSheet.create()`.
+- No inline styles except for dynamic values (e.g. computed from theme or props).
+- Never use hardcoded color hex values in component files. Always use theme tokens.
+- Never use hardcoded spacing numbers. Always use `spacing.*` from `@theme/spacing`.
+- Border radius, shadows: define in `@theme/radius.ts` and `@theme/shadows.ts`.
+
+## Spacing Scale
+Base unit: 4px. All spacing must be a multiple of 4.
+```ts
+import { spacing } from '@theme/spacing';
+// spacing.tiny = 4, spacing.small = 8, spacing.medium = 12, spacing.large = 16, spacing.extraLarge = 20, spacing.xxLarge = 24
+```
+
+## Component Sizes
+Standard sizes: `'small' | 'medium' | 'large'`
+Never use abbreviations: not `sm`, `md`, `lg`.
+
+## Font Scaling
+Always set `allowFontScaling={false}` on all Text and Animated.Text elements.
+This is handled by the `AppTypography` atom — never render Text directly in components.
+
+## Boolean Props
+Use `is` prefix: `isDisabled`, `isLoading`, `isSelected`, `isVisible`.
+
+## Imports Order
+1. React
+2. React Native core
+3. Expo packages
+4. Third-party libraries
+5. Internal — `@theme/*`, `@components/*`, `@hooks/*`
+6. Local (same folder)
+
+## State Management
+- Component-level state: `useState` / `useReducer`
+- Theme: `useTheme()` hook from `@hooks/useTheme`
+- No global state library for now
+
+## Reanimated
+Use `react-native-reanimated` for all animations.
+Prefer `useAnimatedStyle` + `withTiming` / `withSpring`.
+Do not use the legacy `Animated` API from React Native core.
+
+## Comments
+Add a JSDoc comment above every exported component explaining: purpose, key variants, usage example.
+Add inline comments for non-obvious logic only. Do not comment obvious code.
