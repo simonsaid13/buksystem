@@ -143,7 +143,6 @@ const styles = StyleSheet.create({
   },
   preview: {
     padding: spacing.large,
-    alignItems: 'flex-start',
   },
   propsBox: {
     padding: spacing.medium,

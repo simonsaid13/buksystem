@@ -1,6 +1,88 @@
+import React, { useState } from 'react';
 import type { ComponentType } from 'react';
 import AppTypography from '@components/atoms/AppTypography';
 import AppButton from '@components/atoms/AppButton';
+import AppCalendarRangePicker from '@components/organisms/AppCalendarRangePicker';
+import AppDatepickerInput from '@components/molecules/AppDatepickerInput';
+
+// ── Stateful wrappers for calendar previews ──────────────────────────────────
+// The calendar and datepicker need React state to be interactive in the DS.
+
+const CalendarPreview: React.FC<{ initialStart?: Date; initialEnd?: Date }> = ({
+  initialStart,
+  initialEnd,
+}) => {
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth() + 1);
+  const [start, setStart] = useState<Date | undefined>(initialStart);
+  const [end, setEnd] = useState<Date | undefined>(initialEnd);
+
+  const handleDay = (date: Date) => {
+    if (!start || (start && end)) { setStart(date); setEnd(undefined); }
+    else { date < start ? setStart(date) : setEnd(date); }
+  };
+
+  const handlePrev = () => {
+    if (month === 1) { setYear((y) => y - 1); setMonth(12); }
+    else setMonth((m) => m - 1);
+  };
+  const handleNext = () => {
+    if (month === 12) { setYear((y) => y + 1); setMonth(1); }
+    else setMonth((m) => m + 1);
+  };
+
+  const firstOfCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const firstOfDisplayMonth = new Date(year, month - 1, 1);
+  const canGoPrev = firstOfDisplayMonth > firstOfCurrentMonth;
+
+  return React.createElement(AppCalendarRangePicker, {
+    year, month,
+    selectedStart: start, selectedEnd: end,
+    onDayPress: handleDay,
+    onPrevMonth: handlePrev, onNextMonth: handleNext,
+    canGoPrev, canGoNext: true,
+  });
+};
+
+const DatepickerPreview: React.FC<{ initialStart?: Date; initialEnd?: Date }> = ({
+  initialStart,
+  initialEnd,
+}) => {
+  const today = new Date();
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth() + 1);
+  const [start, setStart] = useState<Date | undefined>(initialStart);
+  const [end, setEnd] = useState<Date | undefined>(initialEnd);
+
+  const handleDay = (date: Date) => {
+    if (!start || (start && end)) { setStart(date); setEnd(undefined); }
+    else { date < start ? setStart(date) : setEnd(date); }
+  };
+
+  const handlePrev = () => {
+    if (month === 1) { setYear((y) => y - 1); setMonth(12); }
+    else setMonth((m) => m - 1);
+  };
+  const handleNext = () => {
+    if (month === 12) { setYear((y) => y + 1); setMonth(1); }
+    else setMonth((m) => m + 1);
+  };
+
+  const firstOfCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const firstOfDisplayMonth = new Date(year, month - 1, 1);
+  const canGoPrev = firstOfDisplayMonth > firstOfCurrentMonth;
+
+  return React.createElement(AppDatepickerInput, {
+    selectedStart: start, selectedEnd: end,
+    calendarProps: {
+      year, month,
+      onDayPress: handleDay,
+      onPrevMonth: handlePrev, onNextMonth: handleNext,
+      canGoPrev, canGoNext: true,
+    },
+  });
+};
 
 export type DSCategory = 'atoms' | 'molecules' | 'organisms';
 
@@ -94,6 +176,49 @@ function buildAppButtonFigmaMatrix(): DSStateEntry[] {
  * Figma: see individual component READMEs for Figma links.
  */
 export const componentRegistry: DSComponentEntry[] = [
+  {
+    id: 'app-calendar-range-picker',
+    name: 'AppCalendarRangePicker',
+    category: 'organisms',
+    figmaPage: 'Components',
+    description: 'Full date-range calendar. Tap any available date to start a selection.',
+    states: [
+      { label: 'Empty (no selection)', props: {} },
+      {
+        label: 'With range selected (20–28)',
+        props: {
+          initialStart: (() => { const d = new Date(); d.setDate(20); return d; })(),
+          initialEnd: (() => { const d = new Date(); d.setDate(28); return d; })(),
+        },
+      },
+      {
+        label: 'Single date selected',
+        props: {
+          initialStart: (() => { const d = new Date(); d.setDate(20); return d; })(),
+        },
+      },
+      { label: 'Loading skeleton', props: { isLoading: true } },
+    ],
+    component: CalendarPreview as ComponentType<any>,
+  },
+  {
+    id: 'app-datepicker-input',
+    name: 'AppDatepickerInput',
+    category: 'molecules',
+    figmaPage: 'Components',
+    description: 'Pill input that expands into the range calendar. Tap to toggle open.',
+    states: [
+      { label: 'Default (no date)', props: {} },
+      {
+        label: 'With date range',
+        props: {
+          initialStart: (() => { const d = new Date(); d.setDate(19); return d; })(),
+          initialEnd: (() => { const d = new Date(); d.setDate(21); return d; })(),
+        },
+      },
+    ],
+    component: DatepickerPreview as ComponentType<any>,
+  },
   {
     id: 'app-button',
     name: 'AppButton',
