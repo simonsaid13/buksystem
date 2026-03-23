@@ -1,41 +1,33 @@
-import React, { createContext, useState, type ReactNode } from 'react';
-import { winterTokens, summerTokens } from './themes';
+import React, { createContext, type ReactNode } from 'react';
+import { winterTokens } from './themes';
 import type { ColorTokens } from './tokens';
 
-export type ThemeName = 'winter' | 'summer';
+export type ThemeName = 'winter';
 
 export interface ThemeContextValue {
   tokens: ColorTokens;
   themeName: ThemeName;
-  setTheme: (name: ThemeName) => void;
 }
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 interface ThemeProviderProps {
   children: ReactNode;
-  initialTheme?: ThemeName;
 }
 
 /**
  * ThemeProvider
  * Wrap the app root with this to provide theme tokens to all components.
- * Usage: <ThemeProvider initialTheme="winter"><App /></ThemeProvider>
+ * Usage: <ThemeProvider><App /></ThemeProvider>
+ *
+ * Summer theme is not yet implemented — only winter is active.
  */
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
-  children,
-  initialTheme = 'winter',
-}) => {
-  const [themeName, setThemeName] = useState<ThemeName>(initialTheme);
-
-  const tokens = themeName === 'winter' ? winterTokens : summerTokens;
-
-  const setTheme = (name: ThemeName) => {
-    setThemeName(name);
-  };
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const themeName: ThemeName = 'winter';
+  const tokens = winterTokens;
 
   return (
-    <ThemeContext.Provider value={{ tokens, themeName, setTheme }}>
+    <ThemeContext.Provider value={{ tokens, themeName }}>
       {children}
     </ThemeContext.Provider>
   );

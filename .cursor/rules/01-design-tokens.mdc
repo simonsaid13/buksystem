@@ -110,10 +110,27 @@ spacing.xxLarge   // 24
 spacing.xxxLarge  // 32
 ```
 
+## Radius Tokens
+Border radius values sourced from Figma using the `radius(N)` naming convention where N × 4 = px value.
+```ts
+import { radius } from '@theme/radius';
+
+radius.small      // 4   — radius(1)
+radius.medium     // 8   — radius(2)
+radius.large      // 12  — radius(3)
+radius.extraLarge // 16  — radius(4)
+radius.xxLarge    // 24  — radius(6)
+radius.full       // 9999 — fully rounded (pill shape)
+```
+
+**Rule**: Never hardcode a border radius number in a component file. Always use `radius.*` from `@theme/radius`.
+If a Figma object has no radius token applied, flag it to the user before building.
+
 ## Validation Checklist
 When creating or reviewing a component, verify:
 - [ ] No hardcoded hex colors anywhere in the component file
 - [ ] No hardcoded spacing numbers — using `spacing.*` everywhere
+- [ ] No hardcoded border radius numbers — using `radius.*` everywhere
 - [ ] All text through `AppTypography`, never raw `Text`
 - [ ] `allowFontScaling={false}` is set (handled by AppTypography)
 - [ ] Colors reference `tokens.*` from `useTheme()`, not primitives

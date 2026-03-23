@@ -9,11 +9,12 @@ alwaysApply: false
 ## When a Figma link is pasted
 
 1. Use Figma MCP to inspect the node.
-2. Extract in order: name, variants/properties, nested components, auto-layout, styles (color, typography, spacing).
+2. Extract in order: name, variants/properties, nested components, auto-layout, styles (color, typography, spacing, corner radius).
 3. Map every Figma style value to a token:
    - Color → nearest `tokens.*` semantic token
    - Font style → `TypographyVariant` from `@theme/typography.ts`
    - Spacing → nearest `spacing.*` value from `@theme/spacing.ts`
+   - Corner radius → nearest `radius.*` value from `@theme/radius.ts`
 4. Before building: summarize what you found and ask the user to confirm.
 
 ## Figma Layer Naming Conventions
@@ -68,6 +69,28 @@ Round Figma spacing values to nearest 4px grid value:
 ```
 If off-grid by more than 2px, flag it: "Figma has [X]px here which is off the 4px grid. Rounding to [nearest]. Ok?"
 
+### Corner Radius
+Figma uses a `radius(N)` naming convention. N is a multiplier — the actual pixel value is N × 4.
+
+Mapping table:
+```
+radius(0)    = 0px   → no radius (flat corners)
+radius(1)    = 4px   → radius.small
+radius(2)    = 8px   → radius.medium
+radius(3)    = 12px  → radius.large
+radius(4)    = 16px  → radius.extraLarge
+radius(6)    = 24px  → radius.xxLarge
+radius(full) = 9999  → radius.full
+```
+
+If Figma shows a raw pixel number instead of the `radius(N)` token format, flag it:
+"[LayerName] has a raw [X]px corner radius instead of a named token. Nearest match: `radius.Y`. Should I use that, or should it be updated in Figma first?"
+
+**Always check every object for missing corner radius.** If an object has no corner radius applied in Figma but visually looks like it should have one, flag it:
+"[LayerName] has no corner radius applied in Figma. This may be missing — please update it in Figma and let me know when it's ready."
+
+Never guess or invent a radius value. Always ask before proceeding.
+
 ## Component Type Detection
 
 Read the Figma layer hierarchy to determine atomic category:
@@ -87,4 +110,5 @@ When uncertain, ask.
 
 1. Confirm with user: "Built [ComponentName] with states: [list]. Missing from Figma: [list if any]. Registered in registry.ts."
 2. If any tokens were unmapped or off-grid values rounded — summarize at the end.
-3. Ask if a README was wanted or auto-generate it.
+3. If any objects had no corner radius applied in Figma — list them explicitly so the user can update Figma.
+4. Ask if a README was wanted or auto-generate it.

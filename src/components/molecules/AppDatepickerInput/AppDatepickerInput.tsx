@@ -52,7 +52,7 @@ const AppDatepickerInput: React.FC<AppDatepickerInputProps> = ({
   const hasDate = !!selectedStart;
   const rangeText = formatRange(selectedStart, selectedEnd);
   const displayText = rangeText ?? placeholder;
-  const textColor = hasDate ? tokens.textOnCard : tokens.textOnCardSecondary;
+  const textColor = hasDate ? tokens.textOnCard : tokens.textOnCardSubtle;
 
   return (
     <View style={styles.wrapper}>
@@ -69,7 +69,7 @@ const AppDatepickerInput: React.FC<AppDatepickerInputProps> = ({
         <AppIcon
           name={isOpen ? 'CalendarArrowDown' : 'Calendar'}
           size={24}
-          color={tokens.iconOnCardSecondary}
+          color={tokens.iconOnCardSubtle}
           strokeWidth={1.5}
         />
         <AppTypography

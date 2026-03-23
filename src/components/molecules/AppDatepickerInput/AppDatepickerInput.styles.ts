@@ -31,7 +31,7 @@ export const createStyles = (tokens: ColorTokens) =>
     // ── Calendar panel ────────────────────────────────────────────
     calendarPanel: {
       backgroundColor: tokens.bgCard,
-      borderRadius: radius.large,
+      borderRadius: radius.3,
       overflow: 'hidden',
     },
   });

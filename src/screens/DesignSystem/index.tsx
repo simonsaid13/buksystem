@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, FlatList, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, FlatList, StyleSheet, SafeAreaView } from 'react-native';
 import useTheme from '@hooks/useTheme';
 import { spacing } from '@theme/spacing';
 import AppTypography from '@components/atoms/AppTypography';
@@ -17,7 +17,7 @@ import type { DSFilter } from './components/DSTabBar';
  * Shows all components with all states. Searchable and filterable.
  */
 const DesignSystemScreen: React.FC = () => {
-  const { tokens, themeName, setTheme } = useTheme();
+  const { tokens } = useTheme();
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<DSFilter>('all');
   const [selectedEntry, setSelectedEntry] = useState<DSComponentEntry | null>(null);
@@ -51,7 +51,7 @@ const DesignSystemScreen: React.FC = () => {
 
   if (selectedEntry) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: tokens.bgSurface }]}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor: tokens.surface }]}>
         <DSComponentPage
           entry={selectedEntry}
           onBack={() => setSelectedEntry(null)}
@@ -61,29 +61,23 @@ const DesignSystemScreen: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: tokens.bgSurface }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: tokens.surface }]}>
       {/* Top bar */}
       <View style={[styles.topBar, { borderBottomColor: tokens.dividerOnSurface }]}>
         <View style={styles.titleRow}>
           <AppTypography variant="title2" color={tokens.textOnCard}>
             Design System
           </AppTypography>
-          <AppTypography variant="captionRegular" color={tokens.textOnCardSecondary}>
+          <AppTypography variant="captionRegular" color={tokens.textOnCardSubtle}>
             {componentRegistry.length} components
           </AppTypography>
         </View>
 
-        {/* Theme toggle */}
-        <TouchableOpacity
-          onPress={() => setTheme(themeName === 'winter' ? 'summer' : 'winter')}
-          style={[styles.themeToggle, { backgroundColor: tokens.intSecondary }]}
-          accessibilityRole="switch"
-          accessibilityLabel={`Switch to ${themeName === 'winter' ? 'summer' : 'winter'} theme`}
-        >
-          <AppTypography variant="captionHighlight" color={tokens.textOnIntSecondary}>
-            {themeName === 'winter' ? '❄️ Winter' : '☀️ Summer'}
+        <View style={[styles.themeToggle, { backgroundColor: tokens.intSecondary }]}>
+          <AppTypography variant="captionHighlight" color={tokens.textOnIntSubtle}>
+            ❄️ Winter
           </AppTypography>
-        </TouchableOpacity>
+        </View>
       </View>
 
       {/* Search */}

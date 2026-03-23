@@ -50,6 +50,12 @@ All text in the app goes through the `AppTypography` atom — never raw `<Text>`
 Base unit: 4px. Named scale: `tiny` (4), `small` (8), `medium` (12), `large` (16), `extraLarge` (20), `xxLarge` (24), `xxxLarge` (32).
 Never use raw numbers for spacing in components.
 
+### Border Radius
+Figma uses `radius(N)` tokens where the pixel value = N × 4. Named scale in `@theme/radius.ts`:
+`small` (4), `medium` (8), `large` (12), `extraLarge` (16), `xxLarge` (24), `full` (9999).
+Never hardcode radius numbers in components. Always use `radius.*`.
+When pulling from Figma, always check that every object has a named radius token applied — if not, flag it and ask Simon to update Figma first.
+
 ### Icons
 Two sources:
 - **Iconoir React Native** for standard UI icons. kebab-case name → PascalCase component: `arrow-right` → `ArrowRight`.
@@ -100,9 +106,11 @@ Every text state must include long-text and 2-line wrap test entries.
 
 - No hardcoded hex colors anywhere in component files
 - No hardcoded spacing numbers anywhere in component files
+- No hardcoded border radius numbers anywhere in component files — always `radius.*`
 - No raw `<Text>` — always `<AppTypography>`
 - No direct Iconoir or SVG imports in feature components — always `<AppIcon>`
 - Both themes (winter + summer) must always be updated together
 - `registry.ts` must be updated every time a component is created or changed
 - Always ask about missing states before finishing a component
 - Always add long-text and wrap-test entries for every text state
+- When pulling from Figma, always flag objects with no corner radius applied — never guess

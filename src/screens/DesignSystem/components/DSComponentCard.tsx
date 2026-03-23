@@ -28,19 +28,19 @@ const DSComponentCard: React.FC<Props> = ({ entry, onPress }) => {
           </AppTypography>
           {entry.figmaPage && (
             <View style={[styles.badge, { backgroundColor: tokens.intSecondary }]}>
-              <AppTypography variant="captionLabel" color={tokens.textOnIntSecondary}>
+              <AppTypography variant="captionLabel" color={tokens.textOnIntSubtle}>
                 {entry.figmaPage}
               </AppTypography>
             </View>
           )}
         </View>
-        <AppTypography variant="captionRegular" color={tokens.textOnCardSecondary}>
+        <AppTypography variant="captionRegular" color={tokens.textOnCardSubtle}>
           →
         </AppTypography>
       </View>
 
       {entry.description && (
-        <AppTypography variant="captionRegular" color={tokens.textOnCardSecondary}>
+        <AppTypography variant="captionRegular" color={tokens.textOnCardSubtle}>
           {entry.description}
         </AppTypography>
       )}

@@ -13,6 +13,7 @@ Run this checklist mentally and flag issues to the user:
 ### Token Check
 - [ ] Zero hardcoded hex values in component files
 - [ ] Zero hardcoded spacing numbers — `spacing.*` used throughout
+- [ ] Zero hardcoded border radius numbers — `radius.*` used throughout
 - [ ] All text through `AppTypography`, never raw `<Text>`
 - [ ] `allowFontScaling={false}` handled (if using raw Text for any reason)
 - [ ] Icon colors use `tokens.icon*` values
@@ -81,6 +82,8 @@ When building from Figma, flag any discrepancy between Figma and existing code:
 - Figma uses a color that doesn't exist in tokens → "This Figma color (#XXXXXX) has no matching semantic token. Closest match: `tokens.intPrimary`. Should I use that, or add a new token?"
 - Figma uses a typography style not in the type scale → "Figma uses 15px/600 weight, which isn't in the type scale. Closest match: `body1Tiny` with `emphasized`. Should I use that?"
 - Figma spacing doesn't match 4px grid → "Figma has 10px padding here, which is not on the 4px grid. Should I round to `spacing.m` (12px)?"
+- Figma object has no corner radius applied → "This object has no corner radius applied in Figma. It may be missing — please update it in Figma and let me know when it's ready."
+- Figma uses a raw pixel radius instead of the `radius(N)` token → "This object has a raw [X]px corner radius instead of a named token. Nearest match: `radius.Y`. Should I use that, or should it be updated in Figma first?"
 
 ## README Requirement
 

@@ -34,7 +34,7 @@ https://www.figma.com/design/UVD55dzNAbBp6nYax44QdD/Bukovel--Styles?node-id=2-90
 
 ```tsx
 <AppTypography variant="title1">Bukovel</AppTypography>
-<AppTypography variant="body1" color={tokens.textOnCardSecondary}>
+<AppTypography variant="body1" color={tokens.textOnCardSubtle}>
   Ukraine's largest ski resort
 </AppTypography>
 <AppTypography variant="ctaLarge" align="center">Book Now</AppTypography>

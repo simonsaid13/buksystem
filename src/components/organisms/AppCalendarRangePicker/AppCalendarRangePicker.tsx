@@ -172,7 +172,7 @@ const AppCalendarRangePicker: React.FC<AppCalendarRangePickerProps> = ({
           <View key={i} style={styles.weekCell}>
             <AppTypography
               variant="captionHighlight"
-              color={tokens.textOnCardSecondary}
+              color={tokens.textOnCardSubtle}
               align="center"
             >
               {label}

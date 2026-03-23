@@ -45,7 +45,8 @@ Do not put multiple unrelated components in the same file.
 - No inline styles except for dynamic values (e.g. computed from theme or props).
 - Never use hardcoded color hex values in component files. Always use theme tokens.
 - Never use hardcoded spacing numbers. Always use `spacing.*` from `@theme/spacing`.
-- Border radius, shadows: define in `@theme/radius.ts` and `@theme/shadows.ts`.
+- Never use hardcoded border radius numbers. Always use `radius.*` from `@theme/radius`.
+- Shadows: define in `@theme/shadows.ts`.
 
 ## Spacing Scale
 Base unit: 4px. All spacing must be a multiple of 4.

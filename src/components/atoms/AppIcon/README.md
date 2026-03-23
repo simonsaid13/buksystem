@@ -38,5 +38,5 @@ const { tokens } = useTheme();
 
 <AppIcon name="Search" size={24} color={tokens.iconOnCard} />
 <AppIcon name="ArrowRight" size={20} color={tokens.iconOnInt} />
-<AppIcon name="XmarkCircle" size={24} color={tokens.iconOnCardSecondary} isDecorative />
+<AppIcon name="XmarkCircle" size={24} color={tokens.iconOnCardSubtle} isDecorative />
 ```

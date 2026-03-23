@@ -16,7 +16,7 @@ const DSComponentPage: React.FC<Props> = ({ entry, onBack }) => {
   const [expandedState, setExpandedState] = useState<string | null>(null);
 
   return (
-    <View style={[styles.container, { backgroundColor: tokens.bgSurface }]}>
+    <View style={[styles.container, { backgroundColor: tokens.surface }]}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: tokens.dividerOnSurface }]}>
         <TouchableOpacity
@@ -34,7 +34,7 @@ const DSComponentPage: React.FC<Props> = ({ entry, onBack }) => {
             {entry.name}
           </AppTypography>
           {entry.figmaPage && (
-            <AppTypography variant="captionRegular" color={tokens.textOnCardSecondary}>
+            <AppTypography variant="captionRegular" color={tokens.textOnCardSubtle}>
               {entry.figmaPage}
             </AppTypography>
           )}
@@ -55,7 +55,7 @@ const DSComponentPage: React.FC<Props> = ({ entry, onBack }) => {
         )}
 
         {/* States */}
-        <AppTypography variant="captionLabel" color={tokens.textOnCardSecondary}>
+        <AppTypography variant="captionLabel" color={tokens.textOnCardSubtle}>
           States ({entry.states.length})
         </AppTypography>
 
@@ -77,7 +77,7 @@ const DSComponentPage: React.FC<Props> = ({ entry, onBack }) => {
                   accessibilityRole="button"
                   accessibilityLabel={isExpanded ? 'Hide props' : 'Show props'}
                 >
-                  <AppTypography variant="captionRegular" color={tokens.textOnCardSecondary}>
+                  <AppTypography variant="captionRegular" color={tokens.textOnCardSubtle}>
                     {isExpanded ? '▲ props' : '▼ props'}
                   </AppTypography>
                 </TouchableOpacity>
@@ -90,8 +90,8 @@ const DSComponentPage: React.FC<Props> = ({ entry, onBack }) => {
 
               {/* Props (collapsible) */}
               {isExpanded && (
-                <View style={[styles.propsBox, { backgroundColor: tokens.bgSurface }]}>
-                  <AppTypography variant="captionRegular" color={tokens.textOnCardSecondary}>
+                <View style={[styles.propsBox, { backgroundColor: tokens.surface }]}>
+                  <AppTypography variant="captionRegular" color={tokens.textOnCardSubtle}>
                     {JSON.stringify(state.props, null, 2)}
                   </AppTypography>
                 </View>
